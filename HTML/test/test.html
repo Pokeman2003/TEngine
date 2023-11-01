@@ -1,0 +1,19 @@
+<body>
+	<h1>Exemplar Template Engine : [!tEnMajor].[!tEnMinor].[!tEnPatch] - [!tEnCodename]</h1>
+	<p>This is a showcase of all of the template engine's feature.</p>
+	<hr>
+	<ul>
+		<li>Constants are \[!likeThis], [!likeThis]!</li>
+		<li>Variables are \[@likeThis], [@likeThis]!</li>
+		<li>Files are \[#likeThis.html], [#likeThis.html]!</li>
+		<li>Tables are tags chained together are \[*fileName.html:@inputVariable], and then repeatedly call upon \[^] or \[^tablePosition].</li>
+	</ul>
+	<p>Tables are a bit more involved, and work like this:</p>
+	<table>
+		[*table.html:@tableInput]
+	</table>
+	<p>As you can see, tables are a <i>very</i> powerful feature which open up many different possibilities.</p>
+	<p>Another little interesting factoid is that file tags are first tested relative to the template, then relative to the script, and finally absolute. This means that you can place your templates folder anywhere you damn well please, and have it work just fine. Some examples include [#relativeFile.html], [#test2/relativeFile.html], and [#test3/relativeFile.html].</p>
+	<hr>
+	<p>Finally, this engine DOES support chaining together constant and variable tags with others. That can look a bit like \[#@likeThis], \[^!likeThis], or even \[@!likeThis]. You can see this in action with [!@thisLike].</p>
+</body>
