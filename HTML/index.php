@@ -17,10 +17,11 @@
 	
 	echo $templateFile->construct();
 	
+	
+	echo "<hr>";
 	var_dump($templateFile->returnConsts());
 	echo "<br>";
 	var_dump($templateFile->returnVars());
 	echo "<br>";
 	var_dump($templateFile->returnSets());
-	echo "<hr>";
 ?>
