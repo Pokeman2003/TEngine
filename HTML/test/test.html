@@ -15,5 +15,6 @@
 	<p>As you can see, tables are a <i>very</i> powerful feature which open up many different possibilities.</p>
 	<p>Another little interesting factoid is that file tags are first tested relative to the template, then relative to the script, and finally absolute. This means that you can place your templates folder anywhere you damn well please, and have it work just fine. Some examples include [#relativeFile.html], [#test2/relativeFile.html], and [#test3/relativeFile.html].</p>
 	<hr>
-	<p>Finally, this engine DOES support chaining together constant and variable tags with others. That can look a bit like \[#@likeThis], \[^!likeThis], or even \[@!likeThis]. You can see this in action with [@!thisLike].</p>
+	<p>Finally, this engine DOES support chaining together constant and variable tags with others, as well as file piping as input for variable names and such. That can look a bit like \[#@likeThis], \[^!likeThis], or even \[@!likeThis]. You can see this in action with [@!thisLike].</p>
+	<p>Please note that piping files as variable names can lead to very strange results, and should be used sparingly, if not <b>NEVER</b>! It's simply there for specific edgecases. Also note that if safe insertion is enabled(is it enabled:[!tEnSafeInsert]? It is by default), you may have to call upon the method <b>refreshRequests()</b> multiple times in order to allow access to all chained/piped values.</p>
 </body>

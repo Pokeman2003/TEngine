@@ -1,9 +1,9 @@
 @echo off
 set server="C:\Users\Workspace\Desktop\XAMPP Server"
 set HTML="C:\Users\Workspace\Desktop\Sources\TEngine\HTML\"
-set MySQL="C:\Users\Workspace\Desktop\Sources\Project TEngine\MySQL\"
-set PHPInc="C:\Users\Workspace\Desktop\Sources\Project TEngine\Engine\"
-set PHPSet="C:\Users\Workspace\Desktop\Sources\Project TEngine\php.ini"
+set MySQL="C:\Users\Workspace\Desktop\Sources\TEngine\MySQL\"
+set PHPInc="C:\Users\Workspace\Desktop\Sources\TEngine\Engine\"
+set PHPSet="C:\Users\Workspace\Desktop\Sources\TEngine\php.ini"
 echo Mount or unmount?
 choice
 if %errorlevel%==1 goto mount
@@ -24,8 +24,8 @@ if exist %PHPSet% (mklink /h %server%\php\php.ini %PHPSet%&echo Mounted settings
 exit /b
 
 :unmount
-if exist %server%\include rmdir %server%\include
-if exist %server%\mysql\data rmdir %server%\mysql\data
-if exist %server%\htdocs rmdir %server%\htdocs
+if exist %server%\include rmdir /s /q %server%\include
+if exist %server%\mysql\data rmdir /s /q %server%\mysql\data
+if exist %server%\htdocs rmdir /s /q %server%\htdocs
 if exist %server%\php\php.ini del %server%\php\php.ini
 exit /b
