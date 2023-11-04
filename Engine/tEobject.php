@@ -27,8 +27,16 @@
 			$this->toFill = array(array(), array(), array());
 			$this->varFile($this->file, 0);
 		}
+		public function refreshRequests() {
+			$toFill = array(array(), array());
+			array_push($toFill, $this->toFill[2]);
+			$this->toFill = $toFill;
+			$this->varFile($this->file, 0);
+			$this->preen();
+		}
 		
 		function varFile($file, $fileDepth) {
+			echo $file . "<br>";
 			if ($fileDepth >= tEnMaxFiles)
 				return;
 			$fileDepth++;
@@ -38,45 +46,57 @@
 			$position = 0;
 			$isOpen = false;
 			while (true) {
-				$tString = substr($fileString, $position, 1);
-				//echo $tString;
-				if ($tString == "")
+				$subStr = substr($fileString, $position, 1);
+				
+				if ($subStr == "")
 					break;
-				if ($tString == tEnTagQ)
+				if ($subStr == tEnTagQ)
 					$position++;
-				if ($tString == tEnTagS) {
+				if ($subStr == tEnTagS) {
 					$position++;
-					$type = substr($fileString, $position, 1);
-					if ($type == tEnConst || $type == tEnVar || $type == tEnFile ||$type == tEnTableB)
+					$subStr = substr($fileString, $position, 1);
+					if ($subStr == tEnConst || $subStr == tEnVar || $subStr == tEnFile || $subStr == tEnTableB) {
 						$isOpen = true;
+						$finalValue = false;
+						$size = 0;
+						$start = $position;
+					}
 				}
-				$position++;
+				
+				// If we have found an open tag, we now parse it.
 				while ($isOpen) {
-					$tString = substr($fileString, $position, 1);
+					$position++;
+					$subStr = substr($fileString, $position, 1);
 					
-					
-					if ($tString == "")
-						break;
-					if ($type == tEnTableB && $tString == tEnTableF)
-						$size = $tEnTableK;
-					if ($tString == tEnTagE) {
-						if ($type == tEnTableB) {
-							
-						}
-						else {
-							$size = $position-1;
-							if ($type == tEnConst)
-								$this->addValue($this->toFill[0], substr($fileString, $position-$size, $position-$size));
-						}
+					if ($subStr == "") {
 						$isOpen = false;
 					}
-					$position++;
+					if (($subStr == tEnConst || $subStr == tEnVar) && !$finalValue)
+						$start++;
+					else
+						$finalValue = true;
+					
+					if ($subStr == tEnTableK)
+						$tSize = $position;
+					
+					if ($subStr == tEnTagE) {
+						$size = $position-$start;
+						$isOpen = false;
+					}
+					
+					if ($isOpen == false && $size != 0) {
+						echo "<br>" . substr($fileString, $start, $size) . "<br>";
+					}
 				}
+				$position++;
 			}
 		}
 		
 		function addValue($array, $value) {
 			echo $value;
+		}
+		function preen() {
+			
 		}
 		
 		public function construct() {
