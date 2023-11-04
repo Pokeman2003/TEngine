@@ -15,12 +15,12 @@
 	$templateFile->setVariable("likeThis", $likeThis);
 	
 	
-	var_dump($templateFile->returnConsts());
+	/* var_dump($templateFile->returnConsts());
 	echo "<br>";
 	var_dump($templateFile->returnVars());
 	echo "<br>";
 	var_dump($templateFile->returnSets());
-	echo "<hr>";
+	echo "<hr>"; */
 	
 	echo $templateFile->construct();
 ?>

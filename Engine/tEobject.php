@@ -92,7 +92,7 @@
 						$tPosition = $size;
 						$tStart = $start;
 						$finalValue = false;
-						$start = $size;
+						$start += $size;
 					}
 					
 					if ($subStr == tEnTagE) // When we find the end tag, we know it's ended.
@@ -132,15 +132,55 @@
 							}
 							
 						} else { // Tables are treated through special logic due to their crazy two-part complexity. Gotta love it!
-							// The first half of this is resolving the table filename.
-							$inProcess = substr($fileString, $tStart, $tPosition-1);
-							if ($tStart != $position) { // Okay, so basically, we start trying to resolve that half of the chain.
-								echo "A";
+							$rSize = $size-$tPosition; // Reduced mediary size.
+							// The first half of this is resolving the table filename. In most cases, we don't actually need to do this. That said, who knows what horrors the user has subjected this input to.							
+							if ($tStart != $position) { // Okay, so we know that this half of the table is actually a chain. Let's resolve it!
+								$testingVariable = substr($fileString, $tStart+1, $tPosition-2);
+								while (true) {
+									$toTest = substr($fileString, $tStart, 1);
+									$resolutionTest = $this->resolveValue($testingVariable, $toTest);
+									if ($resolutionTest == null) // If we've encountered an unsolvable test, abandon the plan.
+										break;
+									$testingVariable = $resolutionTest;
+									$tStart--;
+									if (substr($fileString, $start-1, 1) == tEnFile) // If the second to next tag would've been the start tag, then we've reached the end of what we needed to do.
+										break;
+								}
+								// At this point, we just need to throw what's left onto the stack to resolve later, if it even needs to be.
+								switch (substr($inProcess, 0, 1)) {
+									case tEnConst:
+										array_push($this->toFill[0], $testingVariable);
+										break;
+									case tEnVar:
+										array_push($this->toFill[1], $testingVariable);
+										break;
+									default:
+										break;
+								}
 							}
+							
+							// Now that the first half has been resolved, let's get to business on the second half.
+							$inProcess = substr($fileString, $start, $rSize-1);
+							if ($start != ($tPosition+$position+1)) {
+								$testingVariable = substr($fileString, $start+1, $rSize-($start-$position-$tPosition)-1);
+								while (true) {
+									$toTest = substr($fileString, $start, 1);
+									$resolutionTest = $this->resolveValue($testingVariable, $toTest);
+									if ($resolutionTest == null) // If we've encountered an unsolvable test, abandon the plan.
+										break;
+									$testingVariable = $resolutionTest;
+									$start--;
+									if (substr($fileString, $start-1, 1) == tEnTableK) // If the second to next tag would've been the start tag, then we've reached the end of what we needed to do.
+										break;
+								}
+								$inProcess = substr($testingVariable, $start, 1) . $testingVariable;
+							}
+							
+							var_dump($inProcess);
 						}
 						
 						$position += $size;
-						echo "<br>" . $inProcess . "<br>";
+						
 					}
 				}
 				$position++; // Position incrementer.
