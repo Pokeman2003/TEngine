@@ -1,9 +1,9 @@
 @echo off
 set server="C:\Users\Workspace\Desktop\XAMPP Server"
-set HTML="C:\Users\Workspace\Desktop\Project TEngine\HTML\"
-set MySQL="C:\Users\Workspace\Desktop\Project TEngine\MySQL\"
-set PHPInc="C:\Users\Workspace\Desktop\Project TEngine\Engine\"
-set PHPSet="C:\Users\Workspace\Desktop\Project TEngine\php.ini"
+set HTML="C:\Users\Workspace\Desktop\Sources\TEngine\HTML\"
+set MySQL="C:\Users\Workspace\Desktop\Sources\Project TEngine\MySQL\"
+set PHPInc="C:\Users\Workspace\Desktop\Sources\Project TEngine\Engine\"
+set PHPSet="C:\Users\Workspace\Desktop\Sources\Project TEngine\php.ini"
 echo Mount or unmount?
 choice
 if %errorlevel%==1 goto mount
