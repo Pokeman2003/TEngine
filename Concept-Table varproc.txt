@@ -1,0 +1,57 @@
+Table variable processing
+
+Inputs:
+$position = Where the tag begins
+$tPosition = Where the tEnTableK is relative to position
+$size = The full size of the tag
+$tStart = Where the line processing ends for the first half of the tag
+$start = Where the line processing ends for the second half of the tag
+
+Implications:
+$size-$tPosition = The size of the second half of the tag
+$tPosition+1 = The size of the first half of the tag
+$position+$tPosition = Where the tEnTableK tag is. (Impossible to prove in sanitized tests.)
+$start-1 = Where the next chain tag is. (Impossible to prove in sanitized tests.)
+($size-$tPosition)-($start-($position+$tPosition)) = The length from the start to the end tag. (Impossible to prove in sanitized tests.)
+
+Proof of Implications:
+[*table.html:@tableInput]
+    $position	: 566
+    $tPosition	: 11
+    $size	: 23
+    $tStart	: 566
+    $start	: 578
+Expected size of second half: 12 (@tableInput)
+23-11 = 12 (Checks out)
+Expected size of first half: 12 (*table.html)
+11+1 = 12 (Checks out)
+
+
+[*!thisLike:@!@thisLike]
+    $position	: 616
+    $tPosition	: 10
+    $size	: 22
+    $tStart	: 617
+    $start	: 630
+Expected size of second half: 12 (@!@thisLike)
+22-10 = 12 (Checks out)
+Expected size of first half: 11 (*!thisLike)
+10+1 = 11 (Checks out)
+
+
+What we need to do:
+Process the first half of the tag for any unresolved piping.
+Process the second half of the tag for any unresolved piping, 
+	and ensure it ends with a variable or constant.
+
+First half:
+Fairly easy. if $position != $tStart, then get the first half of the tag 
+	($position, $tPosition-1), run it through the ringer.
+
+Second half:
+First, check if $position+$tPosition+1 is @ or !. If not, just give up, because it's
+	self evidently not a const or variable.
+Second step, if ($tStart+$tPosition+1) != $start, we know that the second half
+	is not lining up with what's unpiped, so we begin the pipe ringer.
+	
+Finally, we throw onto the respective stacks what we want to do. 

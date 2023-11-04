@@ -13,10 +13,4 @@
 	const tEnTableB = "*";	// Table tags (first is a file tag, second denotes a variable binding, third is replaced by the values)	
 	const tEnTableK = ":";
 	const tEnTableV = "^";
-	
-	// Please don't mess with these, these AREN'T settings.
-	const tEnMajor = 1;
-	const tEnMinor = 0;
-	const tEnPatch = 0;
-	const tEnCodename = "Exemplar";
 ?>

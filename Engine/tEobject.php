@@ -88,7 +88,7 @@
 					else
 						$finalValue = true;
 					
-					if ($subStr == tEnTableK && $primaryIn == tEnTableB) { // When we find a table's K value, then we unlock finalValue and change the tPosition.
+					if ($subStr == tEnTableK && $primaryIn == tEnTableB && $tPosition == null) { // When we find a table's K value, then we unlock finalValue and change the tPosition.
 						$tPosition = $size;
 						$tStart = $start;
 						$finalValue = false;
@@ -132,66 +132,47 @@
 							}
 							
 						} else { // Tables are treated through special logic due to their crazy two-part complexity. Gotta love it!
-							$rSize = $size-$tPosition; // Reduced mediary size.
-							// The first half of this is resolving the table filename. In most cases, we don't actually need to do this. That said, who knows what horrors the user has subjected this input to.							
-							if ($tStart != $position) { // Okay, so we know that this half of the table is actually a chain. Let's resolve it!
-								$testingVariable = substr($fileString, $tStart+1, $tPosition-2);
-								while (true) {
-									$toTest = substr($fileString, $tStart, 1);
-									$resolutionTest = $this->resolveValue($testingVariable, $toTest);
-									if ($resolutionTest == null) // If we've encountered an unsolvable test, abandon the plan.
-										break;
-									$testingVariable = $resolutionTest;
-									$tStart--;
-									if (substr($fileString, $start-1, 1) == tEnFile) // If the second to next tag would've been the start tag, then we've reached the end of what we needed to do.
-										break;
+							// First, we check if this is even worth it. It may not be!
+							$finalValue = substr($fileString, $position+$tPosition+1, 1);
+							if ($finalValue == tEnConst || $finalValue == tEnVar) {
+								// Now that it checks out, let's deal with the halves.
+								$inProcess = substr($fileString, $position+$tPosition+1, $size-$tPosition-1);
+								if ($tStart+$tPosition+1 != $start) { // Oh, there's a chain here!
+									$testingVariable = substr($fileString, $start, ($size-$tPosition)-($start-($position+$tPosition)));
+									while (true) {
+										$toTest = substr($fileString, $start-1, 1);
+										$resolutionTest = $this->resolveValue($testingVariable, $toTest);
+										if ($resolutionTest == null)
+											break;
+										$testingVariable = $resolutionTest;
+										$start--;
+										if ($start-1 == ($position+$tPosition+1)) // If the second to next tag would've been the start tag, then we've reached the end of what we needed to do.
+											break;
+									}
+									$inProcess = substr($fileString, $start-1, 1) . $testingVariable;
 								}
-								// At this point, we just need to throw what's left onto the stack to resolve later, if it even needs to be.
 								switch (substr($inProcess, 0, 1)) {
 									case tEnConst:
-										array_push($this->toFill[0], $testingVariable);
+										array_push($this->toFill[0], substr($inProcess, 1));
 										break;
 									case tEnVar:
-										array_push($this->toFill[1], $testingVariable);
+										array_push($this->toFill[1], substr($inProcess, 1));
 										break;
 									default:
 										break;
-								}
 							}
-							
-							// Now that the first half has been resolved, let's get to business on the second half.
-							$inProcess = substr($fileString, $start, $rSize-1);
-							if ($start != ($tPosition+$position+1)) {
-								$testingVariable = substr($fileString, $start+1, $rSize-($start-$position-$tPosition)-1);
-								while (true) {
-									$toTest = substr($fileString, $start, 1);
-									$resolutionTest = $this->resolveValue($testingVariable, $toTest);
-									if ($resolutionTest == null) // If we've encountered an unsolvable test, abandon the plan.
-										break;
-									$testingVariable = $resolutionTest;
-									$start--;
-									if (substr($fileString, $start-1, 1) == tEnTableK) // If the second to next tag would've been the start tag, then we've reached the end of what we needed to do.
-										break;
-								}
-								$inProcess = substr($testingVariable, $start, 1) . $testingVariable;
 							}
-							
-							var_dump($inProcess);
 						}
 						
 						$position += $size;
-						
 					}
 				}
 				$position++; // Position incrementer.
 			}
 		}
 		
-		function addValue($array, $value) {
-			echo $value;
-		}
 		// If, for whatever reason, you're looking to clear out old variables that cannot be "resolved", then this function will go through and do so.
-		// Please note that unless safe insertion is disabled, you probably won't be able to readd what you want to.
+		// Please note that unless safe insertion is disabled, you probably won't be able to re-add any complex piping without running refreshRequests().
 		public function garbage() {
 			
 		}
@@ -201,7 +182,7 @@
 			
 		}
 		
-		// 
+		// Internal function to try to resolve pipes.
 		function resolveValue($checkFor, $valueType) {
 			switch ($valueType) {
 				case tEnConst:
